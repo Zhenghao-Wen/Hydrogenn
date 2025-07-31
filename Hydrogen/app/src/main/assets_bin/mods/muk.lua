@@ -105,6 +105,11 @@ function newActivity(f,b,c)
   forward = MaterialSharedAxis(MaterialSharedAxis.X, true);
   local ff=f1
   local nt=tonumber(os.time())
+
+  print("DEBUG: activity object: ", tostring(activity))
+  print("DEBUG: activity.getWindow(): ", tostring(activity.getWindow()))
+  print("DEBUG: nTView value: ", tostring(nTView)) -- Also important, as the code is inside 'if nTView then'
+  
   local t = activity.getSupportFragmentManager().beginTransaction()
   --[[t.setCustomAnimations(
   android.R.anim.slide_in_left,
@@ -133,11 +138,50 @@ function newActivity(f,b,c)
     .setBottomRightCornerSize(0)
     .setTopLeftCornerSize(0)
     .setTopRightCornerSize(0)
-    if Build.VERSION.SDK_INT >30
-      WindowShape.setBottomLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(3).getRadius())
-      WindowShape.setBottomRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(2).getRadius())
-      WindowShape.setTopLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(0).getRadius())
-      WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
+    if Build.VERSION.SDK_INT >30 and activity and activity.getWindow() then 
+      local decorView = activity.getWindow().getDecorView()
+        if decorView then
+            local rootWindowInsets = decorView.getRootWindowInsets()
+            if rootWindowInsets then
+            -- Debug print to see what getRoundedCorner returns
+                print("DEBUG: RoundedCorner(0): ", tostring(rootWindowInsets.getRoundedCorner(0)))
+                print("DEBUG: RoundedCorner(1): ", tostring(rootWindowInsets.getRoundedCorner(1)))
+                print("DEBUG: RoundedCorner(2): ", tostring(rootWindowInsets.getRoundedCorner(2)))
+                print("DEBUG: RoundedCorner(3): ", tostring(rootWindowInsets.getRoundedCorner(3)))
+
+                local blCorner = rootWindowInsets.getRoundedCorner(3)
+            if blCorner then -- Check if blCorner is not nil before calling getRadius()
+                WindowShape.setBottomLeftCornerSize(blCorner.getRadius())
+            else
+                print("WARN: BottomLeftCorner is nil, skipping.")
+            end
+      
+            local brCorner = rootWindowInsets.getRoundedCorner(2)
+            if brCorner then
+                WindowShape.setBottomRightCornerSize(brCorner.getRadius())
+            else
+                print("WARN: BottomRightCorner is nil, skipping.")
+            end
+ 
+            local tlCorner = rootWindowInsets.getRoundedCorner(0)
+            if tlCorner then
+                WindowShape.setTopLeftCornerSize(tlCorner.getRadius())
+            else
+                print("WARN: TopLeftCorner is nil, skipping.")
+            end
+ 
+            local trCorner = rootWindowInsets.getRoundedCorner(1)
+            if trCorner then
+                WindowShape.setTopRightCornerSize(trCorner.getRadius())
+            else
+                print("WARN: TopRightCorner is nil, skipping.")
+            end
+         end
+       end
+       --WindowShape.setBottomLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(3).getRadius())
+       --WindowShape.setBottomRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(2).getRadius())
+       --WindowShape.setTopLeftCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(0).getRadius())
+       --WindowShape.setTopRightCornerSize(window.getDecorView().getRootWindowInsets().getRoundedCorner(1).getRadius())
     end
 
     if inSekai
