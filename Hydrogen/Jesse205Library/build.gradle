@@ -48,4 +48,5 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.appcompat.resources
     implementation libs.fastscroll
+    implementation('com.google.andeoid.material:material:1.14.0-alpha02')
 }
